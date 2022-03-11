@@ -1,0 +1,5 @@
+# .env
+DISCORD_TOKEN=~
+ROLE_ID=~
+REACT_MSG_ID=~
+CHANNEL_ID=~
