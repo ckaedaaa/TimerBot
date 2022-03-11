@@ -35,6 +35,13 @@ async def on_raw_reaction_remove(payload):
 		role = discord.utils.get(bot.get_guild(payload.guild_id).roles, id = ROLE_ID)
 		await member.remove_roles(role)
 
+@bot.event
+async def on_command_error(ctx, error):
+	if isinstance(error, discord.ext.commands.MissingRequiredArgument):
+		await ctx.send("You might be missing some arguments there.")
+	elif (isinstance(error, discord.ext.commands.CommandInvokeError) or isinstance(error, discord.ext.commands.errors.BadArgument)):
+		await ctx.send("Invalid input.")
+
 @bot.command(name="work", help="Alerts you in 20 minutes.")
 async def work_function(ctx):
 	if [role.id for role in ctx.author.roles]:
@@ -52,7 +59,17 @@ async def vote_function(ctx):
 
 @bot.command(name="custom", help="Sets a custom timer and alerts you. Usage: !custom <minutes> <seconds>")
 async def custom_function(ctx, minutes_set, seconds_set=0):
+	message_str = "Custom timer set for "
 	if [role.id for role in ctx.author.roles]:
 		scheduler.scheduleDM(ctx.author, "Custom timer is finished! <#" + CHANNEL_ID + ">", int(minutes_set)*60 + seconds_set)
+		if (int(minutes_set) == 1):
+			message_str = message_str + "1 minute"
+		else:
+			message_str = message_str + str(minutes_set) + " minutes"
+		if (int(seconds_set) != 0):
+			message_str = message_str + " and " + str(seconds_set) + " seconds."
+		else:
+			message_str = message_str + "."
+		await ctx.send(message_str)
 
 bot.run(TOKEN)
